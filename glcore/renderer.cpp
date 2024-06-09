@@ -29,7 +29,7 @@ void Renderer::Draw(uint primitive, const VertexArray& va, const IndexBuffer& ib
 	GLCall(glDrawElements(primitive, drawCount, GL_UNSIGNED_INT, (GLvoid*)(sizeof(GLuint) * offset)));
 }
 
-void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, std::vector<ElementData> data)
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, std::vector<ElementData>& data)
 {
 	// bind shader
 	shader.Bind();

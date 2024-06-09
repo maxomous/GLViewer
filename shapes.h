@@ -6,6 +6,7 @@
 #include "glcore/glcore.h"
 
 
+namespace GLViewer {
 
 // A generic shape container conatining a list of vertices
 class Shape
@@ -57,7 +58,7 @@ public:
     static const Shape& Body_Sphere()          { return body_Sphere; }
     
 private:
-    static constexpr float DEFAULT_ANGLE_INCREMENT = 10.0f;
+    inline static const float DEFAULT_ANGLE_INCREMENT = 10.0f;
     
     static Shape wireframe_Circle;
     static Shape wireframe_Square;
@@ -70,3 +71,5 @@ private:
     static Shape body_Sphere;
 
 };
+
+} // End namespace GLViewer

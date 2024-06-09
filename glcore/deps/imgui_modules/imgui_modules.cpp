@@ -6,6 +6,38 @@ using namespace std;
 namespace ImGuiModules
 {
     
+void Dockspace::Begin(float padding, float toolbarHeight)
+{
+    // fullscreen dockspace
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    // create the dockspace below the main tool bar
+    if(toolbarHeight) {
+		ImGui::SetNextWindowPos(viewport->WorkPos + ImVec2(padding, toolbarHeight + 2.0f*padding));
+		ImGui::SetNextWindowSize(viewport->WorkSize - ImVec2(padding*2.0f, toolbarHeight + 3.0f*padding));
+	} else {
+		ImGui::SetNextWindowPos(viewport->WorkPos + ImVec2(padding, padding));
+		ImGui::SetNextWindowSize(viewport->WorkSize - ImVec2(padding*2.0f, padding*2.0f));
+	}
+    ImGui::SetNextWindowViewport(viewport->ID);
+     
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse 
+        | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    
+    // remove window padding as this is controlled by position + size
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace", NULL, window_flags);
+    ImGui::PopStyleVar();
+    
+    // Submit the DockSpace
+    ImGui::DockSpace(ImGui::GetID("DockSpace"), ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoDockingInCentralNode | ImGuiDockNodeFlags_PassthruCentralNode);
+}    
+      
+void Dockspace::End()
+{
+     ImGui::End(); 
+}
+
+
 ImGuiWindow::ImGuiWindow(std::string name, const ImVec2& position, const ImVec2& size) 
     : m_Name(name), m_Position(position), m_Size(size) 
 {}

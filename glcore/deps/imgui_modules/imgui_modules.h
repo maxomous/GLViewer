@@ -18,6 +18,14 @@ namespace ImGuiModules
 {
     using namespace MaxLib::Vector;
     
+
+    class Dockspace
+    {
+    public:
+        static void Begin(float padding = 15.0f, float toolbarHeight = 0.0f);
+        static void End();
+    };
+      
     class ImGuiWindow
     {
     public:        

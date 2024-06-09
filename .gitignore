@@ -35,6 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
+GLViewer
 
 # Debug files
 *.dSYM/
@@ -57,4 +58,4 @@ build-dir/
 
 # Project files
 *.geany
-
+.vscode

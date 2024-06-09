@@ -3,14 +3,17 @@
 
 // GL Maths Library
 #define GLM_FORCE_CTOR_INIT // ensure 
-#include <glm/glm.hpp> 						
+#include <glm/glm.hpp> 									
 #include <glm/gtc/matrix_transform.hpp> 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp> 	
 #include <glm/gtx/rotate_vector.hpp> 
 
 // This takes a std::string of 2/3 values seperated by commas (.000,0.000,2.222) and will return a vec2 / vec3
 glm::vec2 stoVec2(const std::string& msg);
 glm::vec3 stoVec3(const std::string& msg);
+
+// TODO: Maybe remove these
 
 // define additional ImGui constructors
 #define IM_VEC2_CLASS_EXTRA                                                 \
@@ -54,12 +57,13 @@ glm::vec2 glm::vec2() { return new Shape(); }
 static inline std::ostream& operator<<(std::ostream& os, const glm::vec2& p) { os << "(" << p.x << ", " << p.y << ")"; return os; }
 static inline std::ostream& operator<<(std::ostream& os, const glm::vec3& p) { os << "(" << p.x << ", " << p.y << ", " << p.z << ")"; return os; }
 static inline std::ostream& operator<<(std::ostream& os, const glm::vec4& p) { os << "(" << p.x << ", " << p.y << ", " << p.z << ", " << p.w << ")"; return os; }
+static inline std::ostream& operator<<(std::ostream& os, const glm::mat4& m) { os << "(" << glm::to_string(m) << ")"; return os; }
 
 namespace glm {
     static inline bool operator <(const glm::vec2& l, const glm::vec2& r) { return l.x < r.x && l.y < r.y; }
     static inline bool operator >(const glm::vec2& l, const glm::vec2& r) { return l.x > r.x && l.y > r.y; }
     
-    // translate, scale & rotate (in degrees) about x axis and then z axis
+    // Returns transformed vertex of Translate, scale & rotate (in degrees) about x axis and then z axis
     static inline glm::vec3 Transform(const glm::vec3& vertex, const glm::vec3& translate = { 0.0f, 0.0f, 0.0f }, const glm::vec3& scale = { 1.0f, 1.0f, 1.0f }, const glm::vec2& rotate = { 0.0f, 0.0f }) 
     {
         glm::vec3 v = vertex * scale;
@@ -68,11 +72,17 @@ namespace glm {
         v += translate;
         return std::move(v);
     }
-    static inline glm::vec2 Vec2(glm::vec3 v) { return { v.x, v.y }; }
-    static inline glm::vec3 Vec3(glm::vec2 v) { return { v.x, v.y, 0.0f }; }
+    // Returns the transformation matrix of translate, scale & rotate (in degrees) about x axis and then z axis
+    static inline glm::mat4 TransformMatrix(const glm::vec3& translate = { 0.0f, 0.0f, 0.0f }, const glm::vec3& scale = { 1.0f, 1.0f, 1.0f }, const glm::vec2& rotate = { 0.0f, 0.0f }) 
+    {
+        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), scale);
+        glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), glm::radians(rotate[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), glm::radians(rotate[1]), glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), translate);
+        // Multiply the matrices together to create the transformation matrix
+        return std::move(translation * rotationZ * rotationX * scaling);
+    }
 }
-
-
 
 
 //static inline float hypot(glm::vec2 v) { return sqrtf(v.x*v.x + v.y*v.y); }

@@ -210,10 +210,11 @@ private:
     double m_PreviousTime = 0.0f;
 };
 
+
 class GLSystem
 {
 public:
-    GLSystem(int w, int h, const char* name, const char* glsl_version, std::function<void()> cb_GLFW_ConfigVersion, std::function<void(GLFWwindow*)> cb_GLFW_Config, std::function<void(GLFWwindow*)> cb_imgui_Config);
+    GLSystem(int w, int h, const char* name, const char* glsl_version, int glfw_version_major, int glfw_version_minor, std::function<void(GLFWwindow*)> cb_GLFW_Config, std::function<void(GLFWwindow*)> cb_imgui_Config, std::function<void()> cb_imgui_Assets);    
     ~GLSystem();
     
     GLFWwindow*& GetWindow() { return m_Window; };

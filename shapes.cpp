@@ -1,12 +1,11 @@
 #include "shapes.h"
+using namespace std;
 
-
+namespace GLViewer {
 
 Shape::Shape(uint glPrimitive) 
   : primitive(glPrimitive)
-{ 
-    cb_AddVertices(*this); 
-}
+{}
 
 Shape::Shape(uint glPrimitive, std::function<void(Shape& shape)> cb_AddVertices) 
   : primitive(glPrimitive)
@@ -46,14 +45,12 @@ std::vector<glm::vec3>::iterator Shape::begin()         { return m_Vertices.begi
 std::vector<glm::vec3>::iterator Shape::end()           { return m_Vertices.end(); }
 
 
-Shape Shapes::wireframe_Circle = Shape(GL_LINES, [&](Shape& shape) 
+Shape Shapes::wireframe_Circle = Shape(GL_LINE_STRIP, [&](Shape& shape) 
 {
     using namespace MaxLib::Geom;
-    
+
     for (float th = 0.0f; th <= 360.0f; th += DEFAULT_ANGLE_INCREMENT) {
-        float th2 = th + DEFAULT_ANGLE_INCREMENT;
-        shape.AddVertex({ 0.5f * Cos(th),   -0.5f * Sin(th),    0.0f });
-        shape.AddVertex({ 0.5f * Cos(th2),  -0.5f * Sin(th2),   0.0f });
+        shape.AddVertex({ 0.5f * Cos(th), -0.5f * Sin(th), 0.0f });
     }
 });
 
@@ -171,8 +168,8 @@ Shape Shapes::body_Cube = Shape(GL_TRIANGLES, [&](Shape& shape)
 // where u: stack(latitude) angle (-90 <= u <= 90)
 //       v: sector(longitude) angle (0 <= v <= 360)
 Shape Shapes::body_Sphere = Shape(GL_TRIANGLES, [&](Shape& shape) {
-    // Set the size of the sphere
-    float radius = 0.5f;
+    // Set the radius of the sphere
+    float r = 0.5f;
 
     // Calculate the number of slices and stacks based on the given increment angle
     int slices = static_cast<int>(360.0f / DEFAULT_ANGLE_INCREMENT);
@@ -183,31 +180,19 @@ Shape Shapes::body_Sphere = Shape(GL_TRIANGLES, [&](Shape& shape) {
         float phi2 = glm::pi<float>() * static_cast<float>(stack + 1) / static_cast<float>(stacks);
 
         for (int slice = 0; slice < slices; ++slice) {
-            float theta1 = 2.0f * glm::pi<float>() * static_cast<float>(slice) / static_cast<float>(slices);
-            float theta2 = 2.0f * glm::pi<float>() * static_cast<float>(slice + 1) / static_cast<float>(slices);
+            float th1 = 2.0f * glm::pi<float>() * static_cast<float>(slice) / static_cast<float>(slices);
+            float th2 = 2.0f * glm::pi<float>() * static_cast<float>(slice + 1) / static_cast<float>(slices);
 
             // Vertices of the triangle
-            glm::vec3 v1(radius * std::sin(phi1) * std::cos(theta1),
-                         radius * std::sin(phi1) * std::sin(theta1),
-                         radius * std::cos(phi1));
-
-            glm::vec3 v2(radius * std::sin(phi1) * std::cos(theta2),
-                         radius * std::sin(phi1) * std::sin(theta2),
-                         radius * std::cos(phi1));
-
-            glm::vec3 v3(radius * std::sin(phi2) * std::cos(theta1),
-                         radius * std::sin(phi2) * std::sin(theta1),
-                         radius * std::cos(phi2));
-
-            glm::vec3 v4(radius * std::sin(phi2) * std::cos(theta2),
-                         radius * std::sin(phi2) * std::sin(theta2),
-                         radius * std::cos(phi2));
+            glm::vec3 v1(r * sin(phi1)*cos(th1),  r * sin(phi1)*sin(th1),   r * cos(phi1));
+            glm::vec3 v2(r * sin(phi1)*cos(th2),  r * sin(phi1)*sin(th2),   r * cos(phi1));
+            glm::vec3 v3(r * sin(phi2)*cos(th1),  r * sin(phi2)*sin(th1),   r * cos(phi2));
+            glm::vec3 v4(r * sin(phi2)*cos(th2),  r * sin(phi2)*sin(th2),   r * cos(phi2));
 
             // Add the first triangle
             shape.AddVertex(v1);
             shape.AddVertex(v2);
             shape.AddVertex(v3);
-
             // Add the second triangle
             shape.AddVertex(v2);
             shape.AddVertex(v4);
@@ -215,5 +200,4 @@ Shape Shapes::body_Sphere = Shape(GL_TRIANGLES, [&](Shape& shape) {
         }
     }
 });
-
-
+} // End namespace GLViewer
