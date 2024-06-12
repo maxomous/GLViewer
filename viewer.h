@@ -160,6 +160,8 @@ public:
     void AddAxes(const Transform& transform = {});
     // Adds a shape
     void AddShape(const Shape& shape, const glm::vec3& colour, const Transform& transform = {});
+    // Adds vertex of any type primitive (GL_POINTS, GL_LINES etc), one colour (Note: It is much faster to use AddVertices or AddVerticesList for multiple vertices)
+    void AddVertex(uint primitive, const Vertex& vertex, const Transform& transform = {});
     // Adds vertices of any type primitive (GL_POINTS, GL_LINES etc), one colour
     void AddVertices(uint primitive, const Vertices& vertices, const Transform& transform = {});
     // Adds a list of vertices of any type primitive (GL_POINTS, GL_LINES etc), each has their own colour.
@@ -198,7 +200,7 @@ protected:
     
     void DynamicUpdate();
     // Dont call directly, must called as part of cb in AddData 
-    void AddVertex(const glm::vec3& position, const glm::vec3& colour, const Transform& transform); 
+    void AddVertexData(const glm::vec3& position, const glm::vec3& colour, const Transform& transform); 
     
 
     // Wrapper for creating a elementdata class when adding vertices

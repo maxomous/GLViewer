@@ -64,9 +64,11 @@ target_link_libraries(${PROJECT_NAME} OpenGL::GL)
 find_package(GLEW REQUIRED)
 target_link_libraries(${PROJECT_NAME} GLEW::GLEW)
 
+target_link_libraries(${PROJECT_NAME} dl)
+
 
 set_target_properties(${PROJECT_NAME} PROPERTIES IMPORTED_LINK_LIBRARIES "glfw;GLEW;GL")
-set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_LINK_LIBRARIES "glfw;GLEW;GL")
+set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_LINK_LIBRARIES "glfw;GLEW;GL;dl")
 set(IMGUI_LIBRARIES ImGui;glfw;GLEW;GL)
 
 ####################################################

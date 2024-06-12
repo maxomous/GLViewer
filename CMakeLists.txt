@@ -20,6 +20,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 ####################################################
 
 set(DIRS "")
+
 ####################################################
 #           Create List of Source Files
 ####################################################
@@ -48,7 +49,6 @@ endif()
 ## Build target with source files
 add_executable(${PROJECT_NAME} ${SRC_FILES}) # add_library / add_executable
 
-
 ####################################################
 #                Include Librarys
 ####################################################
@@ -58,15 +58,13 @@ add_subdirectory(glcore)
 
 # link libraries
 target_link_libraries(${PROJECT_NAME}
-    MaxLib
     GLCore
 )
-
 
 ####################################################
 #             Set Compiler Options
 ####################################################
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -g -O0 -Wno-psabi) 
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -g) 
 
 ####################################################

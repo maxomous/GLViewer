@@ -18,7 +18,7 @@ namespace ImGuiModules
 {
     using namespace MaxLib::Vector;
     
-
+    // Creates a Dockspace on the main viewport
     class Dockspace
     {
     public:

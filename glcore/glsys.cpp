@@ -174,12 +174,15 @@ void GLSystem::imgui_Impl(const char* glsl_version)
     ImGui_ImplOpenGL3_Init(glsl_version);
 }   
 
+
 void GLSystem::imgui_NewFrame()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
+
+	
 void GLSystem::imgui_Render()
 {
     ImGui::Render();
@@ -196,6 +199,7 @@ void GLSystem::imgui_Render()
         glfwMakeContextCurrent(backup_current_context);
     }
 }
+
 void GLSystem::imgui_Shutdown()
 {
     ImGui_ImplOpenGL3_Shutdown();

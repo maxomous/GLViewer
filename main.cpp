@@ -42,7 +42,8 @@ int main()
         io.IniFilename = iniFile.c_str();
         
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	// io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    
         io.ConfigDockingAlwaysTabBar = true;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
         
@@ -74,8 +75,8 @@ int main()
 
 
 
-    // glsl version  / glfw version major & minor
-    GLSystem glsys(GUI_WINDOW_W, GUI_WINDOW_H, GUI_WINDOW_NAME, "#version 300 es", 3, 0, cb_GLFW_Config, cb_imgui_Config, cb_imgui_Assets);  
+    // glsl version  / glfw version major & minor 	TODO: "#version 300 es"
+    GLSystem glsys(GUI_WINDOW_W, GUI_WINDOW_H, GUI_WINDOW_NAME, "#version 130", 3, 0, cb_GLFW_Config, cb_imgui_Config, cb_imgui_Assets);  
     // Create Viewer instance
     Viewer viewer;
     
@@ -146,9 +147,15 @@ int main()
     };
     
     float angle = 0;
+    bool update_required = true;
     // Set Dynamic / Stream / Text / Image buffers
     // Static buffers should only be set once, before the render loop
     auto cb_Set_DynamicBuffers = [&]() {
+	
+	// Return if no update required
+	if(!update_required) { return; }
+	// update_required = false; update every frame
+	    
 	// Set Text Buffer
 	buffers.SetBufferData(textBuffer, [&](TextBuffer& buffer) {
 	    buffer.Add3DAxisLabels(Transform({0,0,0}, axisSize));

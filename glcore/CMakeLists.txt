@@ -47,58 +47,23 @@ endif()
 ## Build target with source files
 add_library(${PROJECT_NAME} ${SRC_FILES}) # add_library / add_executable
 
-
 ####################################################
 #                Include Librarys
 ####################################################
 
-
-## Find dependencies
-
-# WiringPi
-#find_library(WIRING_PI_LIBRARIES NAMES wiringPi)
-# pThreads
-#find_package(Threads)
-# Geos
-#find_library(GEOS_LIBRARIES NAMES geos_c)
-
-# GLFW (This was 3.3 ...)
-find_package(glfw3 3.2.1 REQUIRED)
-# OpenGL
-find_package(OpenGL REQUIRED)
-# Glew
-find_package(GLEW REQUIRED)
-
-
 ## Include other cmakefiles
 add_subdirectory(deps/imgui)
-
 #find_package(glm REQUIRED)
-#find_package(imgui REQUIRED)
-
-
-# stb does not have a CMake build, but is header-only
-#find_path(STB_INCLUDE_DIRS "stb.h") 
-
-
-#target_include_directories(main PRIVATE ${STB_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
     MaxLib
-    ${WIRING_PI_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${GEOS_LIBRARIES}
-    glfw
-    OpenGL::GL
-    GLEW::GLEW
-    #glm::glm
     ImGui
 )
 ####################################################
 #             Set Compiler Options
 ####################################################
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic) 
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -g) 
 
 ####################################################

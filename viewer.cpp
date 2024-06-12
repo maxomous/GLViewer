@@ -26,10 +26,10 @@ void GeometryBuffer::Reserve(size_t nVertices) {
 void GeometryBuffer::AddCursor(const glm::vec3& colour, const Transform& transform)
 {
     AddData(GL_LINES, [&](GeometryBuffer& b) {
-        b.AddVertex({ 0.0f, -1.0f, 0.0f }, colour, transform);
-        b.AddVertex({ 0.0f,  1.0f, 0.0f }, colour, transform);
-        b.AddVertex({ -1.0f, 0.0f, 0.0f }, colour, transform);
-        b.AddVertex({  1.0f, 0.0f, 0.0f }, colour, transform);
+        b.AddVertexData({ 0.0f, -1.0f, 0.0f }, colour, transform);
+        b.AddVertexData({ 0.0f,  1.0f, 0.0f }, colour, transform);
+        b.AddVertexData({ -1.0f, 0.0f, 0.0f }, colour, transform);
+        b.AddVertexData({  1.0f, 0.0f, 0.0f }, colour, transform);
     });
 }
 
@@ -44,13 +44,13 @@ void GeometryBuffer::AddGrid(const glm::vec2& size, float spacing, const glm::ve
         glm::vec2 sign = glm::vec2(Geom::Sign(size.x), Geom::Sign(size.y));
         // X lines
         for (float i = 0.0f; i <= fabs(size.x); i += spacing) {
-            b.AddVertex({ sign.x * i , 0.0f, 0.0f  }, colour, transform);
-            b.AddVertex({ sign.x * i, size.y, 0.0f }, colour, transform);
+            b.AddVertexData({ sign.x * i , 0.0f, 0.0f  }, colour, transform);
+            b.AddVertexData({ sign.x * i, size.y, 0.0f }, colour, transform);
         }
         // Y lines
         for (float j = 0.0f; j <= fabs(size.y); j += spacing) {
-            b.AddVertex({ 0.0f, sign.y * j, 0.0f  }, colour, transform);
-            b.AddVertex({ size.x, sign.y * j, 0.0f }, colour, transform);
+            b.AddVertexData({ 0.0f, sign.y * j, 0.0f  }, colour, transform);
+            b.AddVertexData({ size.x, sign.y * j, 0.0f }, colour, transform);
         }
     });
 }
@@ -61,12 +61,12 @@ void GeometryBuffer::AddAxes(const Transform& transform)
 {    
     AddData(GL_LINES, [&](GeometryBuffer& b) {
         // draw axis, xyz axes are rgb respectively
-        b.AddVertex({ 0.0f, 0.0f, 0.0f}, Colour::Red, transform);
-        b.AddVertex({ 1.0f, 0.0f, 0.0f}, Colour::Red, transform);
-        b.AddVertex({ 0.0f, 0.0f, 0.0f}, Colour::Green, transform);
-        b.AddVertex({ 0.0f, 1.0f, 0.0f}, Colour::Green, transform);
-        b.AddVertex({ 0.0f, 0.0f, 0.0f}, Colour::Blue, transform);
-        b.AddVertex({ 0.0f, 0.0f, 1.0f}, Colour::Blue, transform);
+        b.AddVertexData({ 0.0f, 0.0f, 0.0f}, Colour::Red, transform);
+        b.AddVertexData({ 1.0f, 0.0f, 0.0f}, Colour::Red, transform);
+        b.AddVertexData({ 0.0f, 0.0f, 0.0f}, Colour::Green, transform);
+        b.AddVertexData({ 0.0f, 1.0f, 0.0f}, Colour::Green, transform);
+        b.AddVertexData({ 0.0f, 0.0f, 0.0f}, Colour::Blue, transform);
+        b.AddVertexData({ 0.0f, 0.0f, 1.0f}, Colour::Blue, transform);
     });
     cout << "mAKE SURE AXIS IS RGB IN CORRECT ORDER" << endl;
 } 
@@ -77,18 +77,25 @@ void GeometryBuffer::AddShape(const Shape& shape, const glm::vec3& colour, const
 {   
     AddData(shape.primitive, [&](GeometryBuffer& b) {
         for(size_t i = 0; i < shape.Size(); i++) {
-            b.AddVertex(shape[i], colour, transform);
+            b.AddVertexData(shape[i], colour, transform);
         }
     });
 } 
 
+// Adds vertex of any type primitive (GL_POINTS, GL_LINES etc), one colour
+void GeometryBuffer::AddVertex(uint primitive, const Vertex& vertex, const Transform& transform)
+{
+    AddData(primitive, [&](GeometryBuffer& b) {
+        b.AddVertexData(vertex.position, vertex.colour, transform);
+    });
+}
 
 // Adds vertices of any type primitive (GL_POINTS, GL_LINES etc), one colour
 void GeometryBuffer::AddVertices(uint primitive, const Vertices& vertices, const Transform& transform)
 {
     AddData(primitive, [&](GeometryBuffer& b) {
         for(auto& v : vertices.position) {
-            b.AddVertex(v, vertices.colour, transform);
+            b.AddVertexData(v, vertices.colour, transform);
         }
     });
 }
@@ -99,7 +106,7 @@ void GeometryBuffer::AddVerticesList(uint primitive, const std::vector<Vertices>
     AddData(primitive, [&](GeometryBuffer& b) {
         for(auto& vertices : verticesList) {
             for(auto& vertex : vertices.position) {
-                b.AddVertex(vertex, vertices.colour, transform);
+                b.AddVertexData(vertex, vertices.colour, transform);
             }
         }
     });
@@ -189,7 +196,7 @@ void GeometryBuffer::ClearAll()
 }
     
 // This should only be called by higher level Add functions m_ElementData.emplace_back() must be called after adding vertices
-void GeometryBuffer::AddVertex(const glm::vec3& position, const glm::vec3& colour, const Transform& transform)
+void GeometryBuffer::AddVertexData(const glm::vec3& position, const glm::vec3& colour, const Transform& transform)
 {
     glm::vec3 v = transform.TransformVertex(position);
     m_Vertices.emplace_back(std::move(v), colour);  
@@ -214,9 +221,8 @@ void GeometryBuffer::AddData(uint primitive, std::function<void(GeometryBuffer&)
 
 void GeometryBuffer::Render(const glm::mat4& proj, const glm::mat4& view) 
 {   
-    // TODO
-    //~ if(!m_Initialised || !m_Show)
-        //~ return; 
+    if(!m_Initialised)
+        return; 
     
     m_Shader->Bind();
     m_Shader->SetUniformMat4f("u_MVP", proj * view * glm::mat4(1.0f));
@@ -347,8 +353,7 @@ RenderableText::RenderableText(Viewer* viewer, const std::string& text, const gl
 RenderableText::RenderableText(Viewer* viewer, const std::string& text, const glm::vec2& pos2d, const glm::vec2& textAlign)
     : m_Label(text), m_Valid(true)
 {
-    (void)viewer;
-    //~ ImVec2 textPosition = ImVec2(Window::InvertYCoord(position2D));   
+    (void)viewer; 
     // Send text to imgui draw list (first align the text)
     ImVec2 textSize = ImGui::CalcTextSize(m_Label.c_str());
     m_Position = pos2d - textAlign * glm::vec2(textSize.x, textSize.y);  
